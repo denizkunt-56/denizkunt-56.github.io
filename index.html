@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Game Studio</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 300px;
+      background: #1e293b;
+      padding: 20px;
+      border-right: 2px solid #334155;
+    }
+    .sidebar h1 {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+    .sidebar label {
+      display: block;
+      margin: 12px 0 6px;
+    }
+    .sidebar input, .sidebar button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    .sidebar button {
+      background: #38bdf8;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .game-area {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    #gameCanvas {
+      background: #111827;
+      border: 3px solid #38bdf8;
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h1>🎮 Mini Game Studio</h1>
+    <p>Kendi mini oyununu oluştur ve test et.</p>
+
+    <label>Karakter Hızı</label>
+    <input type="number" id="speed" value="5" min="1" max="20">
+
+    <label>Karakter Boyutu</label>
+    <input type="number" id="size" value="40" min="10" max="100">
+
+    <button onclick="applySettings()">Ayarları Uygula</button>
+  </div>
+
+  <div class="game-area">
+    <canvas id="gameCanvas" width="800" height="500"></canvas>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let player = {
+      x: 100,
+      y: 100,
+      size: 40,
+      speed: 5,
+      color: '#38bdf8'
+    };
+
+    const keys = {};
+
+    document.addEventListener('keydown', e => keys[e.key] = true);
+    document.addEventListener('keyup', e => keys[e.key] = false);
+
+    function applySettings() {
+      player.speed = parseInt(document.getElementById('speed').value);
+      player.size = parseInt(document.getElementById('size').value);
+    }
+
+    function update() {
+      if (keys['ArrowUp'] || keys['w']) player.y -= player.speed;
+      if (keys['ArrowDown'] || keys['s']) player.y += player.speed;
+      if (keys['ArrowLeft'] || keys['a']) player.x -= player.speed;
+      if (keys['ArrowRight'] || keys['d']) player.x += player.speed;
+
+      // sınırlar
+      if (player.x < 0) player.x = 0;
+      if (player.y < 0) player.y = 0;
+      if (player.x + player.size > canvas.width) player.x = canvas.width - player.size;
+      if (player.y + player.size > canvas.height) player.y = canvas.height - player.size;
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = player.color;
+      ctx.fillRect(player.x, player.y, player.size, player.size);
+    }
+
+    function gameLoop() {
+      update();
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+  </script>
+</body>
+</html>
